@@ -15,7 +15,19 @@ PRIORITY_CHOICES=[
     ('medium', 'Medium'),
     ('high', 'High'),
 ]
+class TaskQuerySet(models.QuerySet):
+    def active(self):
+        return self.filter(active=True)
+    
+    def upcoming(self):
+        return self.filter(due_date__gt=timezone.now().date(), status__in=['todo', 'in_progress'])
 
+
+class TaskManager(models.Manager):
+    def get_queryset(self):
+        return TaskQuerySet(self.model, using=self._db)
+    def all(self):
+        return self.get_queryset().active().upcoming()
 class Task(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
@@ -29,6 +41,8 @@ class Task(models.Model):
     due_date = models.DateField()
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='project_tasks')
+
+    objects = TaskManager()
 
     def __str__(self):
         return self.name

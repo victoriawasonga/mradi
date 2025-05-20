@@ -7,7 +7,18 @@ import random
 import hashlib
 from django.utils.timesince import timesince
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta,datetime
+
+
+#profile picture location function 
+def profile_picture_path_location(instance, filename):
+    #get todays date YYYY-MM-DD
+    today_date = datetime.now().strftime('%Y-%m-%d')
+    #return the upload path 
+    return 'profile_pictures/%s/%s/%s' % (instance.user.username,today_date, filename)
+    #return f'profile_pictures/{today_date}/{instance.user.username}/{filename}'
+
+
 
 
 
@@ -18,7 +29,7 @@ class Profile(models.Model):
     location = models.CharField(max_length=255,null=True,blank=True)
     birth_date = models.DateField(null=True, blank=True)
     join_date = models.DateField(auto_now_add=True)
-    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True)
+    profile_picture = models.ImageField(upload_to=profile_picture_path_location, blank=True)
 
     def __str__(self):
         return f'{self.user.username} Profile'

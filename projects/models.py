@@ -14,7 +14,21 @@ PRIORITY_CHOICES=[
     ('medium', 'Medium'),
     ('high', 'High'),
 ]
+class ProjectQuerySet(models.QuerySet):
+    def active(self):
+        return self.filter(active=True)
+    
+    def upcoming(self):
+        return self.filter(due_date__gt=timezone.now().date(), status__in=['todo', 'in_progress'])
 
+
+class ProjectManager(models.Manager):
+    def get_queryset(self):
+        return ProjectQuerySet(self.model, using=self._db)
+    def all(self):
+        return self.get_queryset().active().upcoming()
+
+    
 class Project(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
@@ -28,6 +42,8 @@ class Project(models.Model):
     due_date = models.DateField()
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='projects')
     # budget = models.DecimalField(max_digits=10, decimal_places=2)
+
+    objects = ProjectManager()
 
     def __str__(self):
         return self.name
