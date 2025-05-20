@@ -313,6 +313,7 @@
                 <!-- /.card-header -->
                 <div class="card-body p-0">
                   <ul class="users-list clearfix">
+
                     {%for member in latest_members%}
                       <li>
                         <img src="{{member.profile_picture_url}}" alt="User Image">
@@ -364,7 +365,7 @@
                         <span class="direct-chat-timestamp float-right">{{notification.noftification_time_formatted}}</span>
                       </div>
                       <!-- /.notification-infos -->
-                      <img class="direct-chat-img" src="{{notification.actor.profile.profile_picture_urle}}" alt="message user image">
+                      <img class="direct-chat-img" src="{{notification.actor.profile.profile_picture_url}}" alt="message user image">
                       <!-- /.notification-img -->
                       <div class="direct-chat-text">
                         {{notification.verb}}
